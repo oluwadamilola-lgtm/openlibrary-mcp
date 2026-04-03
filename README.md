@@ -1,102 +1,84 @@
-# 📚 Open Library MCP Server
+# OpenLibrary MCP Server
 
-An MCP (Model Context Protocol) server that integrates the [Open Library API](https://openlibrary.org/developers/api) with Claude Desktop, allowing you to search books, get book details, and explore authors — all from a natural language prompt.
+For this quiz, I built an MCP server that connects the Open Library API to Claude Desktop. The idea is simple — instead of going to a browser to search for books, you can just ask Claude directly.
 
----
-
-## Features
-
-This MCP server exposes three tools to Claude:
-
-| Tool | Description |
-|------|-------------|
-| `search_books` | Search for books by title, author, or keyword |
-| `get_book_details` | Get full details of a book using its Open Library Work ID |
-| `search_author` | Look up an author's biography and notable works |
+I picked Open Library because I'm genuinely interested in books and libraries, and I liked that it's completely free and open — no API key needed, no sign-up, just data.
 
 ---
 
-## Requirements
+## What it does
 
+Once connected to Claude Desktop, you can ask Claude things like:
+- "Search for books about artificial intelligence"
+- "Who is George Orwell and what did he write?"
+- "Get me details about this book"
+
+Claude will use the MCP server to fetch real results from Open Library and respond with actual data.
+
+There are 3 tools available:
+
+- **search_books** — search for books by title, keyword, or topic
+- **get_book_details** — get full info on a specific book using its Open Library Work ID
+- **search_author** — look up an author's bio and list of works
+
+---
+
+## How to set it up
+
+### Requirements
 - Python 3.10+
-- [Claude Desktop](https://www.anthropic.com/claude) app installed
-- No API key needed (Open Library is free and open)
+- Claude Desktop (make sure you download the direct installer from claude.ai/download, NOT the Microsoft Store version — the Store version doesn't support custom MCP servers)
 
----
+### Steps
 
-## Installation
-
-### 1. Clone the repository
-
+1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/openlibrary-mcp.git
+git clone https://github.com/oluwadamilola-lgtm/openlibrary-mcp.git
 cd openlibrary-mcp
 ```
 
-### 2. Create a virtual environment and install dependencies
-
+2. Create a virtual environment and install dependencies
 ```bash
 python -m venv venv
-source venv/bin/activate        # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Note the full path to your Python executable
-
+3. Find your Python path
 ```bash
-which python    # On Windows: where python
+# Mac/Linux
+which python
+
+# Windows
+Get-Command python | Select-Object -ExpandProperty Source
 ```
 
-You'll need this path for the Claude Desktop config.
-
----
-
-## Connecting to Claude Desktop
-
-Open your Claude Desktop config file:
-
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-
-Add the following (replace paths with your actual paths):
+4. Add this to your Claude Desktop config file
+   - On Windows: `C:\Users\YOUR_NAME\AppData\Roaming\Claude\claude_desktop_config.json`
+   - On Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "openlibrary": {
-      "command": "/full/path/to/venv/bin/python",
-      "args": ["/full/path/to/openlibrary-mcp/server.py"]
+      "command": "/full/path/to/your/venv/python",
+      "args": ["/full/path/to/server.py"]
     }
   }
 }
 ```
 
-**Then restart Claude Desktop.**
+5. Restart Claude Desktop — you should see it say "used openlibrary integration" when you ask about books
 
 ---
 
-## Example Prompts
+## Dependencies
 
-Once connected, try these prompts in Claude Desktop:
-
-- *"Search for books about machine learning"*
-- *"Find books by George Orwell"*
-- *"Get details for the book with work ID OL45804W"*
-- *"Who is Tolkien and what are his famous works?"*
+- `mcp` — the Model Context Protocol SDK
+- `httpx` — for making HTTP requests to the Open Library API
 
 ---
 
-## Project Structure
+## Notes
 
-```
-openlibrary-mcp/
-├── server.py          # Main MCP server
-├── requirements.txt   # Python dependencies
-└── README.md          # This file
-```
-
----
-
-## License
-
-MIT
+One thing I ran into during setup: if you install Claude Desktop from the Microsoft Store, it runs in a sandboxed environment and won't load custom MCP servers at all. You have to use the direct installer from claude.ai/download. Took a while to figure that out but it works perfectly once you use the right version.
